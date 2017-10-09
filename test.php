@@ -22,7 +22,9 @@
 
 			$workspaceId = $me->workspaces[0]->id;
 
-			// deleteProjects($workspaceId);			
+			// deleteProjects($workspaceId);
+
+			$tools = new AsanaTools();			
 
 
 			$projects = $client->projects->findByWorkspace($workspaceId, null, array('iterator_type' => false));
@@ -32,8 +34,9 @@
 
 
 
-			// $project = createProject();
-			// $project2 = copyProject($project->id);
+			// $project = $tools->createProject();
+			// $project2 = $tools->createProject();
+			// $project2 = $tools->copyProject($project->id);
 
 
 			// echo "<br><br>";
@@ -41,18 +44,19 @@
 			// echo "<br><br>";	
 
 
-			// $task = createTask(array($project->id, $project2->id), "double task");
-			// $task = createTask(array($project2->id), "two task");;
-
-			// $subtask = createSubTask($task->id);
-			// $subtask2 = createSubTask($task->id, "sub Task");
-			// $subtask3 = createSubTask($subtask2->id, "sub Task GO");
-
-
-			// $copiedTask = copyTask($task->id, TRUE);
+			// $task = $tools->createTask(array($project->id), "double task");
+			// $task = $tools->createTask(array($project2->id), "two task");;
+// 
+			// $subTask = $tools->createSubTask($task->id);
+			// $subtask2 = $tools->createSubTask($task->id, "sub Task");
+			// $subtask3 = $tools->createSubTask($subtask2->id, "sub Task GO");
 
 
-			$project2 = copyProject($project->id);
+			// $copiedTask = $tools->copyTask($task->id, array($project2->id, $project->id));
+			
+			// $copiedTask2 = $tools->copyTask($subTask->id, array($copiedTask->id) ,TRUE);
+
+			$project2 = $tools->copyProject($project->id);
 
 		
 
