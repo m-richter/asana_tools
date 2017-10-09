@@ -1,5 +1,13 @@
 <?php  
 
+/**
+* 
+*/
+class AsanaTools
+{
+	
+
+
 	/**
      * Creates a project in the globally selected workspace.
      * 
@@ -8,7 +16,7 @@
      * @param  name The name for the project.
      * @return Retruns the full record of the newly created project.
      */
-	function createProject ($name = "new project") {
+	public function createProject ($name = "new project") {
 		global $workspaceId;
 		global $client;
 		$project = $client->projects->createInWorkspace($workspaceId, array('name' => $name, "public" => TRUE));
@@ -27,7 +35,7 @@
      * @param  name The name for the project.
      * @return Returns the full record of the newly created task.
      */
-	function createTask ($projectsArr, $name = "new Task") {
+	public function createTask ($projectsArr, $name = "new Task") {
 		global $client;
 		global $me;
 		global $workspaceId;
@@ -47,7 +55,7 @@
      * @param  name The name for the new subtask.
      * @return Returns the full record of the newly created subtask.
      */
-	function createSubTask ($parentTaskId, $name = "new subTask"){
+	public function createSubTask ($parentTaskId, $name = "new subTask"){
 		global $client;
 		global $project;
 		global $me;
@@ -66,11 +74,11 @@
      * Returns the full record of the newly created copy.
      *
      * @param  originalTaskId ID of the task to be copied.
+     * @param  $projectIdArr Array of projects the newly copied task is associated with. If NULL the associated projects will be the same as for the original task.     
      * @param  deep If set to TRUE subtasks will be copied as well.
-     * @param  $projectIdArr Array of projects the newly copied task is associated with. If NULL the associated projects will be the same as for the original task.
      * @return Returns the full record of the newly copied task.
      */
-	function copyTask($originTaskId, $deep = FALSE, $projectIdArr = NULL){
+	public function copyTask($originTaskId, $projectIdArr = NULL, $deep = TRUE){
 		global $client;
 		global $workspaceId;
 
@@ -117,7 +125,7 @@
 
 
 		if($deep){
-			copySubTasks($originTask->id, $taskCopy->id);
+			$this->copySubTasks($originTask->id, $taskCopy->id);
 		}
 
 		return $taskCopy;
@@ -133,7 +141,7 @@
      * @param  toTaskId ID of the task for the subtask(s) to be copied to.
      * @return Returns TRUE if succesful.
      */
-	function copySubTasks($fromTaskId, $toTaskId){
+	public function copySubTasks($fromTaskId, $toTaskId){
 		global $client;
 
 
@@ -169,7 +177,7 @@
 			}
 
 			$newSubTask = $client->tasks->addSubtask($toTaskId, $subTaskArray);
-			copySubTasks($subTask->id, $newSubTask->id);
+			$this->copySubTasks($subTask->id, $newSubTask->id);
 		}
 
 		return true;
@@ -184,7 +192,7 @@
      * @param  deep If set to TRUE tasks and subtasks will be copied as well.
      * @return Returns the full record of the newly copied project.
      */
-	function copyProject($targetProjectId, $deep = TRUE){
+	public function copyProject($targetProjectId, $deep = TRUE){
 
 		global $workspaceId;
 		global $client;
@@ -226,7 +234,7 @@
 
 			// reverse the array to keep original order intact
 			foreach (array_reverse($retrievedTasksArray["data"]) as $task) {
-				copyTask($task["id"], TRUE, array($projectCopy->id));
+				$this->copyTask($task["id"], array($projectCopy->id));
 			}
 		}
 
@@ -237,7 +245,7 @@
 	}
 
 
-	function deleteProjects($wspcId){
+	public function deleteProjects($wspcId){
 		global $client;
 
 		$projectIter = $client->projects->findByWorkspace($wspcId);
@@ -251,7 +259,7 @@
 		}
 	}
 
-	function copyProjects($wspcId){
+	public function copyProjects($wspcId){
 
 		global $client;
 
@@ -261,10 +269,12 @@
 
 		while( $projectIter->valid()){
 			
-			copyProject(($projectIter->current())->id);
+			$this->copyProject(($projectIter->current())->id);
 
 			$projectIter->next();
 
 		}
-	}		
+	}
+}
+
 ?>
